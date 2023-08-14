@@ -10,7 +10,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            delay: 20,
+            delay: 30,
             set_brightness_cmd: String::from("xbacklight -set"),
             darkness_sensetivity: 1.7,
         }
