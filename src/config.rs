@@ -12,7 +12,7 @@ impl Default for Config {
         Self {
             delay: 20,
             set_brightness_cmd: String::from("xbacklight -set"),
-            darkness_sensetivity: 1.6,
+            darkness_sensetivity: 1.7,
         }
     }
 }
