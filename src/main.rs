@@ -26,8 +26,8 @@ fn main() {
     loop {
         let mut stream = create_stream(&device);
         // Getting a picture from the camera.
-        // Calculating avarage brightness.
         let (buf, _) = stream.next().unwrap();
+        // Calculating avarage brightness.
         let avr_br =
             calc_avarage(buf, &buf_indexes, checked_buf_length) / config.darkness_sensetivity;
         // Dropping the stream so the led turns off.
