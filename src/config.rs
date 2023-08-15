@@ -5,6 +5,7 @@ pub struct Config {
     pub delay: u64,
     pub set_brightness_cmd: String,
     pub darkness_sensetivity: f64,
+    pub step: usize,
 }
 
 impl Default for Config {
@@ -12,7 +13,8 @@ impl Default for Config {
         Self {
             delay: 30,
             set_brightness_cmd: String::from("xbacklight -set"),
-            darkness_sensetivity: 1.7,
+            darkness_sensetivity: 1.9,
+            step: 64,
         }
     }
 }

@@ -13,12 +13,25 @@ fn main() {
     let config = load_config();
     let device = Device::new(0).expect("Failed to open device");
     let delay = Duration::from_secs(config.delay);
+
+    // Taking a picture so we know the size
+    let mut stream = create_stream(&device);
+    let (buf, _) = stream.next().unwrap();
+    let buf_len = buf.len();
+    drop(stream);
+
+    // Calculating buf_indexes
+    let buf_indexes: Vec<usize> = (0..buf_len).filter(|x| x % config.step == 0).collect();
+
+    let checked_buf_length = buf_indexes.len();
+
     loop {
         let mut stream = create_stream(&device);
         // Getting a picture from the camera.
-        let (buf, _) = stream.next().unwrap();
         // Calculating avarage brightness.
-        let avr_br = (sum(buf) / buf.len()) as f64 / config.darkness_sensetivity;
+        let (buf, _) = stream.next().unwrap();
+        let avr_br =
+            calc_avarage(buf, &buf_indexes, checked_buf_length) / config.darkness_sensetivity;
         // Dropping the stream so the led turns off.
         drop(stream);
         // Changing screen brightness.
@@ -39,12 +52,12 @@ fn main() {
     }
 }
 
-fn sum(slice: &[u8]) -> usize {
+fn calc_avarage(slice: &[u8], slice_indexes: &Vec<usize>, total: usize) -> f64 {
     let mut result = 0;
-    for number in slice {
-        result += *number as usize;
+    for i in slice_indexes {
+        result += slice[*i] as usize;
     }
-    result
+    result as f64 / total as f64
 }
 
 fn create_stream<'a>(device: &Device) -> Stream<'a> {
