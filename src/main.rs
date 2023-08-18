@@ -26,7 +26,6 @@ fn main() {
     let checked_buf_length = buf_indexes.len();
 
     loop {
-        thread::sleep(delay);
         let mut stream = create_stream(&device);
         // Getting a picture from the camera.
         let (buf, _) = stream.next().unwrap();
@@ -35,12 +34,15 @@ fn main() {
             100,
             (calc_avarage(buf, &buf_indexes, checked_buf_length) * config.sensetivity) as u8,
         );
-
         // Dropping the stream so the led turns off.
         drop(stream);
         // Changing screen brightness.
         println!("Brightness: {}", avrg_br);
         change_brightness(&config.set_brightness_cmd, avrg_br);
+
+        // Waiting
+        thread::sleep(delay);
+
         /*
         Changing sensetivity
         If: adaptive sensetivity enabled and brightness has been changed manualy.
