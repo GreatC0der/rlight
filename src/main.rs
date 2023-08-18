@@ -62,7 +62,7 @@ fn main() {
                 );
                 println!("Old sensetivity was {}%.", config.sensetivity);
 
-                config.sensetivity -= (avrg_br - current_br) as f32 * 0.001;
+                config.sensetivity -= (avrg_br as i8 - current_br as i8) as f32 * 0.001;
 
                 if config.sensetivity.is_sign_negative() {
                     config.sensetivity = Config::default().sensetivity;
