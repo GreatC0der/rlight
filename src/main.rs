@@ -8,10 +8,15 @@ mod io;
 use io::{change_brightness, create_stream, get_brightness};
 
 use crate::config::Config;
+use at_debug::at_debug;
 
 fn main() {
+    at_debug!(println!(
+        "You are debugging it! So trying to improve it. Thank you."
+    ));
+
     let mut config = load_config();
-    let device = Device::new(0).expect("Failed to open device");
+    let device = Device::new(0).expect("Failed to open device.");
     let delay = Duration::from_secs(config.delay);
 
     // Taking a picture so we know the size
@@ -37,7 +42,7 @@ fn main() {
         // Dropping the stream so the led turns off.
         drop(stream);
         // Changing screen brightness.
-        println!("Brightness: {}", avrg_br);
+        at_debug!(println!("Brightness has been changed to {}%.", avrg_br));
         change_brightness(&config.set_brightness_cmd, avrg_br);
 
         // Waiting
@@ -50,12 +55,12 @@ fn main() {
         if config.adaptive_sensetivity {
             let current_br = get_brightness(&config.get_brightness_cmd);
             if current_br != avrg_br {
-                println!("Changing sensetivity...");
+                println!("Changing sensetivity because the brightness was changed manually.");
                 println!(
-                    "Calculated brightness: {}    Current brightness: {}",
+                    "Suggested brightness was {}%, Current brightness is {}%.",
                     avrg_br, current_br
                 );
-                println!("Old sensetivity: {}", config.sensetivity);
+                println!("Old sensetivity was {}%.", config.sensetivity);
 
                 config.sensetivity -= (avrg_br - current_br) as f32 * 0.001;
 
@@ -63,11 +68,11 @@ fn main() {
                     config.sensetivity = Config::default().sensetivity;
                 }
 
-                println!("New sensetivity: {}", config.sensetivity);
+                println!("New sensetivity is {}%.", config.sensetivity);
                 config.save();
             }
         }
-        println!("\n");
+        println!("-------------");
     }
 }
 

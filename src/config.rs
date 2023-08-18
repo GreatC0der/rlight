@@ -25,7 +25,7 @@ impl Default for Config {
 
 impl Config {
     pub fn save(&self) {
-        confy::store("rlight", None, self).unwrap();
+        confy::store("rlight", None, self).expect("Couldn't save the config.");
     }
 }
 

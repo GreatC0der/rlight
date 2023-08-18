@@ -14,7 +14,7 @@ pub fn change_brightness(cmd: &str, brightness: u8) {
         .arg("-c")
         .arg(format!("{} {}", cmd, brightness))
         .spawn()
-        .expect("Couldn't change the brightness")
+        .expect("Couldn't change the brightness.")
         .stderr;
 
     if error.is_some() {
@@ -24,7 +24,11 @@ pub fn change_brightness(cmd: &str, brightness: u8) {
 
 pub fn get_brightness(cmd: &str) -> u8 {
     let mut bash = Command::new("/bin/bash");
-    let output = bash.arg("-c").arg(cmd).output().unwrap();
+    let output = bash
+        .arg("-c")
+        .arg(cmd)
+        .output()
+        .expect("Failed to get the brightness.");
     let str_number = String::from_utf8_lossy(&output.stdout);
 
     str_number
@@ -32,5 +36,5 @@ pub fn get_brightness(cmd: &str) -> u8 {
         .next()
         .unwrap()
         .parse::<f32>()
-        .unwrap() as u8
+        .expect("Failed to convert the output of `get_brightness_cmd` to a number.") as u8
 }

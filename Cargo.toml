@@ -13,3 +13,4 @@ confy = { version = "0.5.1", default-features = false, features = ["ron_conf"] }
 serde = "1.0.183"
 serde_derive = "1.0.183"
 v4l = { version = "0.14.0", default-features = false, features = ["libv4l"] }
+at_debug = "0.1.0"
