@@ -8,16 +8,29 @@ pub fn create_stream<'a>(device: &Device) -> Stream<'a> {
     Stream::with_buffers(device, Type::VideoCapture, 1).expect("Failed to create buffer stream")
 }
 
-pub fn change_brightness(set_brightness_cmd: &str, brightness: f64) {
+pub fn change_brightness(cmd: &str, brightness: u8) {
     let mut bash = Command::new("/bin/bash");
     let error = bash
         .arg("-c")
-        .arg(format!("{} {}", set_brightness_cmd, brightness))
+        .arg(format!("{} {}", cmd, brightness))
         .spawn()
-        .expect("Couldn't execute a command to change the brightness")
+        .expect("Couldn't change the brightness")
         .stderr;
 
     if error.is_some() {
         panic!("Failed to change the brightness.");
     }
+}
+
+pub fn get_brightness(cmd: &str) -> u8 {
+    let mut bash = Command::new("/bin/bash");
+    let output = bash.arg("-c").arg(cmd).output().unwrap();
+    let str_number = String::from_utf8_lossy(&output.stdout);
+
+    str_number
+        .split_whitespace()
+        .next()
+        .unwrap()
+        .parse::<f32>()
+        .unwrap() as u8
 }

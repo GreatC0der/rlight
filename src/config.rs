@@ -4,7 +4,9 @@ use serde::{Deserialize, Serialize};
 pub struct Config {
     pub delay: u64,
     pub set_brightness_cmd: String,
-    pub darkness_sensetivity: f64,
+    pub get_brightness_cmd: String,
+    pub sensetivity: f32,
+    pub adaptive_sensetivity: bool,
     pub step: usize,
 }
 
@@ -13,11 +15,20 @@ impl Default for Config {
         Self {
             delay: 30,
             set_brightness_cmd: String::from("xbacklight -set"),
-            darkness_sensetivity: 1.9,
+            get_brightness_cmd: String::from("xbacklight -get"),
+            sensetivity: 0.4,
+            adaptive_sensetivity: true,
             step: 64,
         }
     }
 }
+
+impl Config {
+    pub fn save(&self) {
+        confy::store("rlight", None, self).unwrap();
+    }
+}
+
 pub fn load_config() -> Config {
     confy::load("rlight", None).expect(
         "Couldn't load a config.\n

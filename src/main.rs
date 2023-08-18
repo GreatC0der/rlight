@@ -1,14 +1,16 @@
-use std::thread;
 use std::time::Duration;
+use std::{cmp::min, thread};
 use v4l::{io::traits::CaptureStream, Device};
 
 mod config;
 use config::load_config;
 mod io;
-use io::{change_brightness, create_stream};
+use io::{change_brightness, create_stream, get_brightness};
+
+use crate::config::Config;
 
 fn main() {
-    let config = load_config();
+    let mut config = load_config();
     let device = Device::new(0).expect("Failed to open device");
     let delay = Duration::from_secs(config.delay);
 
@@ -24,26 +26,53 @@ fn main() {
     let checked_buf_length = buf_indexes.len();
 
     loop {
+        thread::sleep(delay);
         let mut stream = create_stream(&device);
         // Getting a picture from the camera.
         let (buf, _) = stream.next().unwrap();
         // Calculating avarage brightness.
-        let avr_br =
-            calc_avarage(buf, &buf_indexes, checked_buf_length) / config.darkness_sensetivity;
+        let avrg_br = min(
+            100,
+            (calc_avarage(buf, &buf_indexes, checked_buf_length) * config.sensetivity) as u8,
+        );
+
         // Dropping the stream so the led turns off.
         drop(stream);
         // Changing screen brightness.
-        println!("Brightness: {}", avr_br);
-        change_brightness(&config.set_brightness_cmd, avr_br);
+        println!("Brightness: {}", avrg_br);
+        change_brightness(&config.set_brightness_cmd, avrg_br);
+        /*
+        Changing sensetivity
+        If: adaptive sensetivity enabled and brightness has been changed manualy.
+        */
+        if config.adaptive_sensetivity {
+            let current_br = get_brightness(&config.get_brightness_cmd);
+            if current_br != avrg_br {
+                println!("Changing sensetivity...");
+                println!(
+                    "Calculated brightness: {}    Current brightness: {}",
+                    avrg_br, current_br
+                );
+                println!("Old sensetivity: {}", config.sensetivity);
 
-        thread::sleep(delay);
+                config.sensetivity -= (avrg_br - current_br) as f32 * 0.001;
+
+                if config.sensetivity.is_sign_negative() {
+                    config.sensetivity = Config::default().sensetivity;
+                }
+
+                println!("New sensetivity: {}", config.sensetivity);
+                config.save();
+            }
+        }
+        println!("\n");
     }
 }
 
-fn calc_avarage(slice: &[u8], slice_indexes: &Vec<usize>, total: usize) -> f64 {
+fn calc_avarage(slice: &[u8], slice_indexes: &Vec<usize>, total: usize) -> f32 {
     let mut result = 0;
     for i in slice_indexes {
         result += slice[*i] as usize;
     }
-    result as f64 / total as f64
+    result as f32 / total as f32
 }
