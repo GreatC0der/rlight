@@ -7,6 +7,7 @@ pub struct Config {
     pub get_brightness_cmd: String,
     pub sensetivity: f32,
     pub adaptive_sensetivity: bool,
+    pub learning_coefficient: f32,
     pub step: usize,
 }
 
@@ -18,6 +19,7 @@ impl Default for Config {
             get_brightness_cmd: String::from("xbacklight -get"),
             sensetivity: 0.4,
             adaptive_sensetivity: true,
+            learning_coefficient: 0.002,
             step: 64,
         }
     }
