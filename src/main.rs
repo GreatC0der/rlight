@@ -12,6 +12,7 @@ use at_debug::at_debug;
 
 fn main() {
     let mut config = load_config();
+    let learning_coefficient = config.learning_coefficient;
     at_debug!(println!("DEBUG: {:?}", config));
     let device = Device::new(0).expect("Failed to open device.");
     let delay = Duration::from_secs(config.delay);
@@ -33,10 +34,13 @@ fn main() {
         let (buf, _) = stream.next().unwrap();
         // Calculating avarage brightness.
         let raw_avrg_br = calc_avarage(buf, &buf_indexes, checked_buf_length);
-        let avrg_br = min(100, (raw_avrg_br * config.sensetivity) as u8);
         // Dropping the stream so the led turns off.
         drop(stream);
+
         // Changing screen brightness.
+        let sensetivity = get_sensetivity(&raw_avrg_br, &mut config);
+
+        let avrg_br = min(100, (raw_avrg_br * *sensetivity) as u8);
         at_debug!(println!(
             "DEBUG: Brightness from the camera: {}",
             raw_avrg_br
@@ -59,16 +63,18 @@ fn main() {
                     "Suggested brightness was {}%, Current brightness is {}%.",
                     avrg_br, current_br
                 );
-                println!("Old sensetivity was {}%.", config.sensetivity);
 
-                config.sensetivity -=
-                    (avrg_br as i8 - current_br as i8) as f32 * config.learning_coefficient;
+                let sensetivity = get_sensetivity(&raw_avrg_br, &mut config);
 
-                if config.sensetivity.is_sign_negative() {
-                    config.sensetivity = Config::default().sensetivity;
+                println!("Old sensetivity was {}%.", sensetivity);
+
+                *sensetivity -= (avrg_br as i8 - current_br as i8) as f32 * learning_coefficient;
+
+                if sensetivity.is_sign_negative() {
+                    *sensetivity = Config::default().mid_sensetivity;
                 }
 
-                println!("New sensetivity is {}%.", config.sensetivity);
+                println!("New sensetivity is {}%.", sensetivity);
                 config.save();
             }
         }
@@ -82,4 +88,12 @@ fn calc_avarage(slice: &[u8], slice_indexes: &Vec<usize>, total: usize) -> f32 {
         result += slice[*i] as usize;
     }
     result as f32 / total as f32
+}
+
+fn get_sensetivity<'a>(raw_avrg_br: &f32, config: &'a mut Config) -> &'a mut f32 {
+    match *raw_avrg_br as u8 {
+        0..=84 => &mut config.dark_sensetivity,
+        85..=169 => &mut config.mid_sensetivity,
+        170..=255 => &mut config.light_sensetivity,
+    }
 }
