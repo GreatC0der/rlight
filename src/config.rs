@@ -19,7 +19,7 @@ impl Default for Config {
             get_brightness_cmd: String::from("xbacklight -get"),
             sensetivity: 0.4,
             adaptive_sensetivity: true,
-            learning_coefficient: 0.002,
+            learning_coefficient: 0.003,
             step: 64,
         }
     }
