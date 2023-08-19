@@ -11,11 +11,8 @@ use crate::config::Config;
 use at_debug::at_debug;
 
 fn main() {
-    at_debug!(println!(
-        "You are debugging it! So trying to improve it. Thank you."
-    ));
-
     let mut config = load_config();
+    at_debug!(println!("DEBUG: {:?}", config));
     let device = Device::new(0).expect("Failed to open device.");
     let delay = Duration::from_secs(config.delay);
 
@@ -35,13 +32,15 @@ fn main() {
         // Getting a picture from the camera.
         let (buf, _) = stream.next().unwrap();
         // Calculating avarage brightness.
-        let avrg_br = min(
-            100,
-            (calc_avarage(buf, &buf_indexes, checked_buf_length) * config.sensetivity) as u8,
-        );
+        let raw_avrg_br = calc_avarage(buf, &buf_indexes, checked_buf_length);
+        let avrg_br = min(100, (raw_avrg_br * config.sensetivity) as u8);
         // Dropping the stream so the led turns off.
         drop(stream);
         // Changing screen brightness.
+        at_debug!(println!(
+            "DEBUG: Brightness from the camera: {}",
+            raw_avrg_br
+        ));
         at_debug!(println!("Brightness has been changed to {}%.", avrg_br));
         change_brightness(&config.set_brightness_cmd, avrg_br);
 
