@@ -38,9 +38,9 @@ fn main() {
         drop(stream);
 
         // Changing screen brightness.
-        let sensetivity = get_sensetivity(&raw_avrg_br, &mut config);
+        let sensitivity = get_sensitivity(&raw_avrg_br, &mut config);
 
-        let avrg_br = min(100, (raw_avrg_br * *sensetivity) as u8);
+        let avrg_br = min(100, (raw_avrg_br * *sensitivity) as u8);
         at_debug!(println!(
             "DEBUG: Brightness from the camera: {}",
             raw_avrg_br
@@ -52,29 +52,29 @@ fn main() {
         thread::sleep(delay);
 
         /*
-        Changing sensetivity
-        If: adaptive sensetivity enabled and brightness has been changed manualy.
+        Changing sensitivity
+        If: adaptive sensitivity enabled and brightness has been changed manualy.
         */
-        if config.adaptive_sensetivity {
+        if config.adaptive_sensitivity {
             let current_br = get_brightness(&config.get_brightness_cmd);
             if current_br != avrg_br {
-                println!("Changing sensetivity because the brightness was changed manually.");
+                println!("Changing sensitivity because the brightness was changed manually.");
                 println!(
                     "Suggested brightness was {}%, Current brightness is {}%.",
                     avrg_br, current_br
                 );
 
-                let sensetivity = get_sensetivity(&raw_avrg_br, &mut config);
+                let sensitivity = get_sensitivity(&raw_avrg_br, &mut config);
 
-                println!("Old sensetivity was {}%.", sensetivity);
+                println!("Old sensitivity was {}%.", sensitivity);
 
-                *sensetivity -= (avrg_br as i8 - current_br as i8) as f32 * learning_coefficient;
+                *sensitivity -= (avrg_br as i8 - current_br as i8) as f32 * learning_coefficient;
 
-                if sensetivity.is_sign_negative() {
-                    *sensetivity = Config::default().mid_sensetivity;
+                if sensitivity.is_sign_negative() {
+                    *sensitivity = Config::default().mid_sensitivity;
                 }
 
-                println!("New sensetivity is {}%.", sensetivity);
+                println!("New sensitivity is {}%.", sensitivity);
                 config.save();
             }
         }
@@ -90,10 +90,10 @@ fn calc_avarage(slice: &[u8], slice_indexes: &Vec<usize>, total: usize) -> f32 {
     result as f32 / total as f32
 }
 
-fn get_sensetivity<'a>(raw_avrg_br: &f32, config: &'a mut Config) -> &'a mut f32 {
+fn get_sensitivity<'a>(raw_avrg_br: &f32, config: &'a mut Config) -> &'a mut f32 {
     match *raw_avrg_br as u8 {
-        0..=84 => &mut config.dark_sensetivity,
-        85..=169 => &mut config.mid_sensetivity,
-        170..=255 => &mut config.light_sensetivity,
+        0..=84 => &mut config.dark_sensitivity,
+        85..=169 => &mut config.mid_sensitivity,
+        170..=255 => &mut config.light_sensitivity,
     }
 }
