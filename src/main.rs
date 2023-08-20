@@ -32,8 +32,8 @@ fn main() {
         let mut stream = create_stream(&device);
         // Getting a picture from the camera.
         let (buf, _) = stream.next().unwrap();
-        // Calculating avarage brightness.
-        let raw_avrg_br = calc_avarage(buf, &buf_indexes, checked_buf_length);
+        // Calculating average brightness.
+        let raw_avrg_br = calc_average(buf, &buf_indexes, checked_buf_length);
         // Dropping the stream so the led turns off.
         drop(stream);
 
@@ -82,7 +82,7 @@ fn main() {
     }
 }
 
-fn calc_avarage(slice: &[u8], slice_indexes: &Vec<usize>, total: usize) -> f32 {
+fn calc_average(slice: &[u8], slice_indexes: &Vec<usize>, total: usize) -> f32 {
     let mut result = 0;
     for i in slice_indexes {
         result += slice[*i] as usize;
