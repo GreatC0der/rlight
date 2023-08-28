@@ -25,3 +25,12 @@ These are the options and their description:
 - adaptive_sensetivity - described [here]().
 - learning_coefficient - The bigger it is, the more serious rlight takes manual brightness changes, be careful!
 - step - 1 To check all pixels. The bigger is the step, the fewer pixels are being checked.
+
+## Installisation
+*Prebuilt binaries are avalible at releases page*
+
+requirements: `v4l-utils-devel clang`
+(this are the names in void linux, look up the names for your distro online.)
+```sh
+  cargo install rlight
+```
