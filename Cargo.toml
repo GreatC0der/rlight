@@ -3,6 +3,7 @@ name = "rlight"
 description = "right light or rust light"
 authors = ["GreatC0der"]
 license = "GPL-3.0"
+repository = "https://github.com/GreatC0der/rlight"
 version = "0.1.0"
 edition = "2021"
 
