@@ -1,11 +1,14 @@
 # rlight - right light or rust light.
-## Use a camera as a light sensor to automatically adjust the brightness of your screen in GNU/Linux.
-## Make the light right for you with an [adaptive sensitivity]() and an [advanced customisation]() ;
+
+###### Use a camera as a light sensor to automatically adjust the brightness of your screen in GNU/Linux.
+###### Make the light right for you with an [adaptive sensitivity]() and an [advanced customisation]().
 -----------
+
 ## Adaptive sensitivity
 If rlight's suggested brightness doesn't suit you, change it manually. 
 The program will detect it and change the sensitivity. 
 It will take some time, but eventually you won't have to change the brightness manually.
+
 ## Advanced customisation
 When you run the program for the first time,
 it will generate a config file in the default config folder
