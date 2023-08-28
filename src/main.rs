@@ -14,7 +14,7 @@ fn main() {
     let mut config = load_config();
     let learning_coefficient = config.learning_coefficient;
     at_debug!(println!("DEBUG: {:?}", config));
-    let device = Device::new(0).expect("Failed to open device.");
+    let device = Device::new(config.camera.into()).expect("Failed to open device.");
     let delay = Duration::from_secs(config.delay);
 
     // Taking a picture so we know the size
