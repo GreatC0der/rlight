@@ -17,8 +17,8 @@ for your operating system(~/.config/rlight in my case).
 These are the options and their description:
 - camera - (built in camera in laptops is usually 0) index of the camera that will be used.
 - delay - (in seconds) waiting time between changing the brightness.
-- set_brightness_cmd - (Will be run this way: set_brightness_cmd brightness) command that will be used to set the brightness. 
-- set_brightness_cmd - (Should return a number) command that will be used to get the brightness. 
+- set_brightness_cmd - (Will be run this way: set_brightness_cmd brightness) a command that will be used to set the brightness. 
+- set_brightness_cmd - (Should return a number) a command that will be used to get the brightness. 
 - light_sensetivity - sensitivity used when the average brightness is between 0 and 85.
 - mid_sensetivity - sensitivity used when the average brightness is between 85 and 170.
 - dark_sensetivity - sensitivity used when the average brightness is between 170 and 255.
