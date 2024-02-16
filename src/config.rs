@@ -2,10 +2,8 @@ use serde_derive::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    pub camera: u8,
+    pub camera: u32,
     pub delay: u64,
-    pub set_brightness_cmd: String,
-    pub get_brightness_cmd: String,
     pub light_sensitivity: f32,
     pub mid_sensitivity: f32,
     pub dark_sensitivity: f32,
@@ -19,8 +17,6 @@ impl Default for Config {
         Self {
             camera: 0,
             delay: 60,
-            set_brightness_cmd: String::from("xbacklight -set"),
-            get_brightness_cmd: String::from("xbacklight -get"),
             light_sensitivity: 0.4,
             mid_sensitivity: 0.4,
             dark_sensitivity: 0.4,
